@@ -121,7 +121,7 @@ export async function getSendPage(slug: string): Promise<SendPage | null> {
       return null;
     }
 
-    const json = await res.json();
+    const json: any = await res.json();
     const raw = json?.data?.[0];
     if (!raw) return null;
 
@@ -154,7 +154,7 @@ export async function getAllSendPageSlugs(): Promise<string[]> {
       next: { revalidate: 300 },
     });
     if (!res.ok) return [];
-    const json = await res.json();
+    const json: any = await res.json();
     return (json?.data ?? []).map(
       (item: any) => item.attributes?.slug ?? item.slug,
     );
