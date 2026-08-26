@@ -9,13 +9,14 @@ import type { Metadata } from "next";
 import { getSendPage } from "@/lib/strapi";
 
 type PageProps = {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 };
 
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
-  const page = await getSendPage(params.slug);
+  const { slug } = await params;
+  const page = await getSendPage(slug);
 
   if (!page) {
     return { title: "Page not found" };
@@ -28,7 +29,8 @@ export async function generateMetadata({
 }
 
 export default async function SendPageRoute({ params }: PageProps) {
-  const page = await getSendPage(params.slug);
+  const { slug } = await params;
+  const page = await getSendPage(slug);
 
   if (!page) {
     notFound();
