@@ -7,6 +7,19 @@
 // (grid1Heading, grid1Body, ...) rather than an array, so components can
 // pull exactly the prop they need.
 
+export type Faq = {
+  id: number;
+  question: string;
+  answer: string;
+  slug: string;
+};
+
+export type RelatedDestination = {
+  slug: string;
+  name: string;
+  destinationCountry?: CountryRef;
+};
+
 export type CountryRef = {
   name: string;
   slug: string;
@@ -298,6 +311,98 @@ export async function getAllSendPageSlugs(): Promise<string[]> {
     );
   } catch (err) {
     console.error("Failed to fetch send-page slugs:", err);
+    return [];
+  }
+}
+
+/**
+ * Fetches other send-pages sharing the same originCountry as `currentSlug`,
+ * for the "More destinations" section. Only called when the current page
+ * has a destinationCountry set (i.e. it's a corridor page) — the section
+ * doesn't apply to parent/origin-only pages.
+ */
+export async function getRelatedDestinations(
+  originCountrySlug: string,
+  currentSlug: string,
+): Promise<RelatedDestination[]> {
+  if (!STRAPI_API_URL || !STRAPI_API_TOKEN) return [];
+
+  const url =
+    `${STRAPI_API_URL}/send-pages` +
+    `?filters[originCountry][slug][$eq]=${encodeURIComponent(originCountrySlug)}` +
+    `&filters[slug][$ne]=${encodeURIComponent(currentSlug)}` +
+    `&filters[destinationCountry][id][$notNull]=true` +
+    `&populate[destinationCountry]=*`;
+
+  try {
+    const res = await fetch(url, {
+      headers: { Authorization: `Bearer ${STRAPI_API_TOKEN}` },
+      next: { revalidate: 60 },
+    });
+    if (!res.ok) return [];
+
+    const json: any = await res.json();
+    return (json?.data ?? []).map((raw: any) => {
+      const fields = raw.attributes ?? raw;
+      return {
+        slug: fields.slug,
+        name: fields.name,
+        destinationCountry: mapCountry(fields.destinationCountry),
+      };
+    });
+  } catch (err) {
+    console.error(
+      `Failed to fetch related destinations for "${originCountrySlug}":`,
+      err,
+    );
+    return [];
+  }
+}
+
+/**
+ * FAQs aren't queried directly by tag — they're related FROM a Tag entry.
+ * We look up the Tag matching the current page's faqSourceTag (case-insensitive),
+ * then read its populated `faqs` relation to get the actual FAQ items.
+ */
+export async function getFaqsByTag(tagName: string): Promise<Faq[]> {
+  if (!STRAPI_API_URL || !STRAPI_API_TOKEN || !tagName) return [];
+
+  const url =
+    `${STRAPI_API_URL}/tags` +
+    `?filters[name][$eqi]=${encodeURIComponent(tagName)}` +
+    `&populate=*`;
+
+  try {
+    const res = await fetch(url, {
+      headers: { Authorization: `Bearer ${STRAPI_API_TOKEN}` },
+      next: { revalidate: 60 },
+    });
+
+    if (!res.ok) {
+      console.error(
+        `getFaqsByTag: Strapi responded with ${res.status} for tag "${tagName}"`,
+      );
+      return [];
+    }
+
+    const json: any = await res.json();
+    const tagEntry = json?.data?.[0];
+    if (!tagEntry) return [];
+
+    const tagFields = tagEntry.attributes ?? tagEntry;
+    const rawFaqs = tagFields.faqs?.data ?? tagFields.faqs ?? [];
+
+    return rawFaqs.map((raw: any) => {
+      const fields = raw.attributes ?? raw;
+      return {
+        id: raw.id,
+        question: fields.question,
+        answer: fields.answer,
+        slug: fields.slug,
+      };
+    });
+  } catch (err) {
+    console.error(`Failed to fetch FAQs for tag "${tagName}":`, err);
     return [];
   }
 }

@@ -14,7 +14,7 @@
 }
 
 .navbar {
-  position: fixed!important;
+  position: fixed !important;
 }
 
 .body-global {
@@ -39,7 +39,21 @@
 }
 
 .new-section-container-9,
-.new-section-container-10 {
-   margin: 0 auto;
+.new-section-container-10,
+.new-section-container {
+  margin: 0 auto;
 }
 
+.va-borderless-wrapper {
+  padding-bottom: var(--_spacing---padding--top-padding);
+  padding-top: var(--_spacing---padding--top-padding);
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+.footer_copy {
+  color: rgb(194, 199, 207);
+  font-size: 14px;
+  line-height: 24px;
+  padding: var(--_spacing---padding--side-padding);
+}
