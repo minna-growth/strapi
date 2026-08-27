@@ -63,7 +63,9 @@ export default async function SendPageRoute({ params }: PageProps) {
         <SendHero
           breadcrumbOneLink={
             page.parentPage
-              ? `${process.env.NEXT_PUBLIC_SITE_URL}/send-money/${page.parentPage.slug}`
+              ? {
+                  href: `${process.env.NEXT_PUBLIC_SITE_URL}/send-money/${page.parentPage.slug}`,
+                }
               : undefined
           }
           breadcrumbOneText={page.parentPage?.name}
@@ -71,13 +73,21 @@ export default async function SendPageRoute({ params }: PageProps) {
           heroHeading={page.heroHeading}
           heroSubheading={page.heroBody}
           buttonPrimaryBtnText={page.primaryCta}
-          destinationCountryFlag={page.destinationCountry?.countryFlag}
+          destinationCountryFlag={
+            page.destinationCountry?.countryFlag
+              ? { href: page.destinationCountry.countryFlag }
+              : undefined
+          }
           destinationShortcode={page.destinationCountry?.currencyShortcode}
-          originCountryFlag={page.originCountry?.countryFlag}
+          originCountryFlag={
+            page.originCountry?.countryFlag
+              ? { href: page.originCountry.countryFlag }
+              : undefined
+          }
           originCountryShortcode={page.originCountry?.currencyShortcode}
         />
         <SendReviewScore />
-      <SendBlock1 block1Heading />
+        <SendBlock1 block1Heading />
       </div>
       <Footer />
     </main>
