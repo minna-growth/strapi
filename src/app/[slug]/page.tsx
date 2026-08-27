@@ -9,6 +9,7 @@ import { UpdatedNavbar } from "webflow/navbar/UpdatedNavbar";
 import { SendHero } from "webflow/SendHero";
 import { SendReviewScore } from "webflow/SendReviewScore";
 import { SendBlock1 } from "webflow/SendBlock1";
+import { SendBlock2 } from "webflow/SendBlock2";
 import { Footer } from "webflow/Footer";
 
 import type { Metadata } from "next";
@@ -32,6 +33,11 @@ export async function generateMetadata({
     title: page.metaTitle || page.name,
     description: page.metaDescription,
   };
+}
+
+function RichText({ html }: { html?: string }) {
+  if (!html) return null;
+  return <div dangerouslySetInnerHTML={{ __html: html }} />;
 }
 
 export default async function SendPageRoute({ params }: PageProps) {
@@ -87,7 +93,8 @@ export default async function SendPageRoute({ params }: PageProps) {
           originCountryShortcode={page.originCountry?.currencyShortcode}
         />
         <SendReviewScore />
-        <SendBlock1 block1Heading />
+        <SendBlock1 block1Heading={page.block1?.heading} block1Body={<RichText html={page.block1?.body} />} originCountryCountryFlag={page.originCountry?.countryFlag} destinationCountryCountryFlag={page.destinationCountry?.countryFlag} />
+        <SendBlock2 block2Heading={page.block2?.heading} block2GridItem1Heading />
       </div>
       <Footer />
     </main>
