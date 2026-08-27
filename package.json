@@ -24,6 +24,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@webflow/webflow-cli": "^2.6.0",
     "eslint": "^9",
     "eslint-config-next": "^15.2.8",
     "postcss-import": "^16.1.0",

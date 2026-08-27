@@ -1,5 +1,14 @@
 import type { Metadata } from "next";
+
+import "webflow/css/normalize.css";
+import "webflow/css/tags.css";
+import "webflow/css/variables.css";
+import "webflow/css/defaults.css";
+import "webflow/css/classes.css";
 import "./globals.css";
+//import "webflow/css/global.css";
+import { DevLinkProvider } from "webflow/DevLinkProvider";
+import { DevLinkFontTags } from "webflow/webflow_modules/DevLinkFontTags";
 
 export const metadata: Metadata = {
   title: "Webflow Cloud Next.js App",
@@ -13,7 +22,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <head>
+        <DevLinkFontTags />
+      </head>
+      <body className="body-global">
+        {" "}
+        <DevLinkProvider>{children}</DevLinkProvider>
+      </body>
     </html>
   );
 }

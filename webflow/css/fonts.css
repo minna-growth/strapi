@@ -1,0 +1,154 @@
+/* Fonts */
+
+@font-face {
+  font-family: "Ibm Plex Sans Arabic";
+  src: url("https://cdn.prod.website-files.com/6360022338a81bd6fdbb1145/69d5451813d75bc2299acc85_ibm-plex-sans-arabic-arabic-400-normal.woff")
+    format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Ibm Plex Sans Arabic";
+  src: url("https://cdn.prod.website-files.com/6360022338a81bd6fdbb1145/69d54518078c3a1a13b00b42_ibm-plex-sans-arabic-arabic-600-normal.woff")
+    format("woff");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Ibm Plex Sans Arabic";
+  src: url("https://cdn.prod.website-files.com/6360022338a81bd6fdbb1145/69d54518ef665550bc0123fa_ibm-plex-sans-arabic-arabic-700-normal.woff")
+    format("woff");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Instrumentserif";
+  src: url("https://cdn.prod.website-files.com/6360022338a81bd6fdbb1145/6989d2d737d043277efa27aa_InstrumentSerif-Regular.ttf")
+    format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Instrumentserif";
+  src: url("https://cdn.prod.website-files.com/6360022338a81bd6fdbb1145/6989d2d7f037781ffb36e6e0_InstrumentSerif-Italic.ttf")
+    format("truetype");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Aeonik";
+  src: url("https://cdn.prod.website-files.com/6360022338a81bd6fdbb1145/6360030c31aa6ee271b3c433_Aeonik-Bold.otf")
+    format("opentype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Aeonik";
+  src: url("https://cdn.prod.website-files.com/6360022338a81bd6fdbb1145/6360030c6f1d023806b9c226_Aeonik-BoldItalic.otf")
+    format("opentype");
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Aeonik";
+  src: url("https://cdn.prod.website-files.com/6360022338a81bd6fdbb1145/6360030c8b483e5adc97b8d8_Aeonik-AirItalic.otf")
+    format("opentype");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Aeonik";
+  src: url("https://cdn.prod.website-files.com/6360022338a81bd6fdbb1145/6360030ce41d6eb65b776399_Aeonik-Light.otf")
+    format("opentype");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Aeonik";
+  src: url("https://cdn.prod.website-files.com/6360022338a81bd6fdbb1145/6360030c6f1d0200e1b9c227_Aeonik-LightItalic.otf")
+    format("opentype");
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Aeonik";
+  src: url("https://cdn.prod.website-files.com/6360022338a81bd6fdbb1145/6360030c4850a47bb3f2b90f_Aeonik-Medium.otf")
+    format("opentype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Aeonik";
+  src: url("https://cdn.prod.website-files.com/6360022338a81bd6fdbb1145/6360030c733c63c2537a4ab6_Aeonik-Regular.otf")
+    format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Aeonik";
+  src: url("https://cdn.prod.website-files.com/6360022338a81bd6fdbb1145/6360030c2248e839d9c3c44a_Aeonik-MediumItalic.otf")
+    format("opentype");
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Aeonikfono";
+  src: url("https://cdn.prod.website-files.com/6360022338a81bd6fdbb1145/674476c328f78a411d4b6c84_AeonikFono-Light.otf")
+    format("opentype");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Aeonikfono";
+  src: url("https://cdn.prod.website-files.com/6360022338a81bd6fdbb1145/674476c31cb6a022190cd8d7_AeonikFono-Medium.otf")
+    format("opentype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Aeonikfono";
+  src: url("https://cdn.prod.website-files.com/6360022338a81bd6fdbb1145/674476c3701fbd8b4e3218f0_AeonikFono-Regular.otf")
+    format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Aeonikfono";
+  src: url("https://cdn.prod.website-files.com/6360022338a81bd6fdbb1145/674476c388f446086bc8c048_AeonikFono-Bold.otf")
+    format("opentype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Aeonik";
+  src: url("https://cdn.prod.website-files.com/6360022338a81bd6fdbb1145/67fe454612c082ea03df4cdd_Aeonik-SemiBold.otf")
+    format("opentype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Aeonik";
+  src: url("https://cdn.prod.website-files.com/6360022338a81bd6fdbb1145/67fe4547561df51a2df7c916_Aeonik-SemiBoldItalic.otf")
+    format("opentype");
+  font-weight: 600;
+  font-style: italic;
+  font-display: swap;
+}
