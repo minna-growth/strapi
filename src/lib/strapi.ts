@@ -3,9 +3,9 @@
 // Matches the real "send-pages" content type. Each of the 13 content
 // blocks maps to its own Webflow component, so blocks are exposed as
 // named fields (block1..block13) rather than a generic looped array.
-// Most blocks share one of two shapes (SectionBlock or GridBlock);
-// block2 is a genuine one-off ("How it works" steps) with its own
-// hand-named sub-fields in Strapi, so it gets its own type.
+// Grid items and steps are likewise exposed as individually named props
+// (grid1Heading, grid1Body, ...) rather than an array, so components can
+// pull exactly the prop they need.
 
 export type CountryRef = {
   name: string;
@@ -21,11 +21,6 @@ export type ParentPageRef = {
   slug: string;
 };
 
-export type GridItem = {
-  heading?: string;
-  body?: string;
-};
-
 // Simple heading/body(/bodyTwo) block — blocks 1, 3, 4, 6, 7, 13
 export type SectionBlock = {
   heading?: string;
@@ -33,22 +28,34 @@ export type SectionBlock = {
   bodyTwo?: string;
 };
 
-// Heading/body + a grid of items — blocks 5, 8, 9, 10, 11, 12
+// Heading/body + up to 5 individually named grid items — blocks 5, 8, 9, 10, 11, 12
+// Not every block uses all 5; unused ones are simply undefined.
 export type GridBlock = {
   heading?: string;
   body?: string;
   bodyTwo?: string;
-  gridItems: GridItem[];
+  grid1Heading?: string;
+  grid1Body?: string;
+  grid2Heading?: string;
+  grid2Body?: string;
+  grid3Heading?: string;
+  grid3Body?: string;
+  grid4Heading?: string;
+  grid4Body?: string;
+  grid5Heading?: string;
+  grid5Body?: string;
 };
 
 // Block 2 specifically: "Sign up / Fund / Send" steps, each with its own
-// named body field in Strapi rather than a generic GridItem body.
+// named body field in Strapi rather than a generic grid item body.
 export type StepsBlock = {
   heading?: string;
-  steps: {
-    heading?: string;
-    body?: string;
-  }[];
+  step1Heading?: string;
+  step1Body?: string;
+  step2Heading?: string;
+  step2Body?: string;
+  step3Heading?: string;
+  step3Body?: string;
 };
 
 export type HighlightedCountry = {
@@ -104,6 +111,12 @@ function mapSectionBlock(
   return { heading, body, bodyTwo };
 }
 
+/**
+ * Maps a grid block (5, 8, 9, 10, 11, 12) to individually named props.
+ * `itemCount` controls how many grid slots actually exist in Strapi for
+ * this block (e.g. 3 for block5, 5 for block11) — slots beyond that stay
+ * undefined rather than being generated, since Strapi doesn't have them.
+ */
 function mapGridBlock(
   fields: Record<string, any>,
   n: number,
@@ -113,30 +126,49 @@ function mapGridBlock(
   const body = fields[`block${n}Body`] || undefined;
   const bodyTwo = fields[`block${n}BodyTwo`] || undefined;
 
-  const gridItems: GridItem[] = [];
+  const block: GridBlock = { heading, body, bodyTwo };
+  let hasAny = Boolean(heading || body || bodyTwo);
+
   for (let j = 1; j <= itemCount; j++) {
     const gHeading = fields[`block${n}GridItem${j}Heading`] || undefined;
     const gBody = fields[`block${n}GridItem${j}Body`] || undefined;
-    if (gHeading || gBody) {
-      gridItems.push({ heading: gHeading, body: gBody });
-    }
+    (block as any)[`grid${j}Heading`] = gHeading;
+    (block as any)[`grid${j}Body`] = gBody;
+    if (gHeading || gBody) hasAny = true;
   }
 
-  if (!heading && !body && !bodyTwo && gridItems.length === 0) return undefined;
-  return { heading, body, bodyTwo, gridItems };
+  return hasAny ? block : undefined;
 }
 
 function mapStepsBlock2(fields: Record<string, any>): StepsBlock | undefined {
   const heading = fields.block2Heading || undefined;
+  const step1Heading = fields.block2GridItem1Heading || undefined;
+  const step1Body = fields.block2SignUpBody || undefined;
+  const step2Heading = fields.block2GridItem2Heading || undefined;
+  const step2Body = fields.block2FundBody || undefined;
+  const step3Heading = fields.block2GridItem3Heading || undefined;
+  const step3Body = fields.block2SendBody || undefined;
 
-  const steps = [
-    { heading: fields.block2GridItem1Heading, body: fields.block2SignUpBody },
-    { heading: fields.block2GridItem2Heading, body: fields.block2FundBody },
-    { heading: fields.block2GridItem3Heading, body: fields.block2SendBody },
-  ].filter((s) => s.heading || s.body);
+  const hasAny = Boolean(
+    heading ||
+    step1Heading ||
+    step1Body ||
+    step2Heading ||
+    step2Body ||
+    step3Heading ||
+    step3Body,
+  );
+  if (!hasAny) return undefined;
 
-  if (!heading && steps.length === 0) return undefined;
-  return { heading, steps };
+  return {
+    heading,
+    step1Heading,
+    step1Body,
+    step2Heading,
+    step2Body,
+    step3Heading,
+    step3Body,
+  };
 }
 
 /**

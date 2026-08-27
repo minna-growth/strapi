@@ -255,9 +255,6 @@ export function SendHero({
             <Block className={"convert-widget"} tag={"div"}>
               <Block className={"atswrapper"} tag={"div"}>
                 <FormWrapper className={"form-block-4"}>
-                  {/* @ts-expect-error — FormForm's generated type (FormHTMLAttributes) doesn't
-    include Finsweet List / custom form attributes: fs-list-element,
-    fs-list-instance, redirect */}
                   <FormForm
                     className={"form"}
                     data-name={"Email Form"}
@@ -267,6 +264,7 @@ export function SendHero({
                     id={"email-form"}
                     method={"get"}
                     name={"email-form"}
+                     // @ts-expect-error FormForm generated type doesn't include redirect
                     redirect={"https://app.grey.co/auth/register"}
                   >
                     <Block className={"atswrapper"} tag={"div"}>

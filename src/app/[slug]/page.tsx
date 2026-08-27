@@ -93,8 +93,21 @@ export default async function SendPageRoute({ params }: PageProps) {
           originCountryShortcode={page.originCountry?.currencyShortcode}
         />
         <SendReviewScore />
-        <SendBlock1 block1Heading={page.block1?.heading} block1Body={<RichText html={page.block1?.body} />} originCountryCountryFlag={page.originCountry?.countryFlag} destinationCountryCountryFlag={page.destinationCountry?.countryFlag} />
-        <SendBlock2 block2Heading={page.block2?.heading} block2GridItem1Heading />
+        <SendBlock1
+          block1Heading={page.block1?.heading}
+          block1Body={<RichText html={page.block1?.body} />}
+          originCountryCountryFlag={page.originCountry?.countryFlag}
+          destinationCountryCountryFlag={page.destinationCountry?.countryFlag}
+        />
+        <SendBlock2
+          block2Heading={page.block2?.heading}
+          block2GridItem1Heading={page.block2?.step1Heading}
+          block2GridItem2Heading={page.block2?.step2Heading}
+          block2GridItem3Heading={page.block2?.step3Heading}
+          block2SignUpBody={page.block2?.step1Body}
+          block2FundBody={page.block2?.step2Body}
+          block2SendBody={page.block2?.step3Body}
+        />
       </div>
       <Footer />
     </main>
