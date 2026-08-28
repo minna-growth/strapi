@@ -3,9 +3,9 @@
 // Matches the real "send-pages" content type. Each of the 13 content
 // blocks maps to its own Webflow component, so blocks are exposed as
 // named fields (block1..block13) rather than a generic looped array.
-// Grid items and steps are likewise exposed as individually named props
-// (grid1Heading, grid1Body, ...) rather than an array, so components can
-// pull exactly the prop they need.
+// Grid items, steps, and highlighted countries are likewise exposed as
+// individually named props (grid1Heading, grid1Body, ...) rather than
+// an array, so components can pull exactly the prop they need.
 
 export type Faq = {
   id: number;
@@ -71,10 +71,16 @@ export type StepsBlock = {
   step3Body?: string;
 };
 
-export type HighlightedCountry = {
-  slug: string;
-  heading?: string;
-  body?: string;
+// Flat, individually named highlighted-country slots — currently seen up
+// to 2 (highlightedCountry1 / highlightedCountry2 in Strapi). Each can be
+// entirely different, so these are picked directly rather than looped.
+export type HighlightedCountries = {
+  country1Slug?: string;
+  country1Heading?: string;
+  country1Body?: string;
+  country2Slug?: string;
+  country2Heading?: string;
+  country2Body?: string;
 };
 
 export type SendPage = {
@@ -103,7 +109,7 @@ export type SendPage = {
   block11?: GridBlock;
   block12?: GridBlock;
   block13?: SectionBlock;
-  highlightedCountries: HighlightedCountry[];
+  highlightedCountries?: HighlightedCountries;
   originCountry?: CountryRef;
   destinationCountry?: CountryRef;
   parentPage?: ParentPageRef;
@@ -187,26 +193,37 @@ function mapStepsBlock2(fields: Record<string, any>): StepsBlock | undefined {
 /**
  * Strapi returns highlightedCountry1, highlightedCountry1Heading,
  * highlightedCountry1Body, highlightedCountry2, ... as flat top-level
- * fields (currently seen up to 2). Only entries with an actual country
- * slug are kept.
+ * fields (currently seen up to 2). Each slot is picked directly rather
+ * than looped, since the two can be entirely unrelated.
  */
-function buildHighlightedCountries(
+function mapHighlightedCountries(
   fields: Record<string, any>,
-): HighlightedCountry[] {
-  const countries: HighlightedCountry[] = [];
+): HighlightedCountries | undefined {
+  const country1Slug = fields.highlightedCountry1 || undefined;
+  const country1Heading = fields.highlightedCountry1Heading || undefined;
+  const country1Body = fields.highlightedCountry1Body || undefined;
+  const country2Slug = fields.highlightedCountry2 || undefined;
+  const country2Heading = fields.highlightedCountry2Heading || undefined;
+  const country2Body = fields.highlightedCountry2Body || undefined;
 
-  for (let i = 1; i <= 2; i++) {
-    const slug = fields[`highlightedCountry${i}`];
-    if (slug) {
-      countries.push({
-        slug,
-        heading: fields[`highlightedCountry${i}Heading`] || undefined,
-        body: fields[`highlightedCountry${i}Body`] || undefined,
-      });
-    }
-  }
+  const hasAny = Boolean(
+    country1Slug ||
+    country1Heading ||
+    country1Body ||
+    country2Slug ||
+    country2Heading ||
+    country2Body,
+  );
+  if (!hasAny) return undefined;
 
-  return countries;
+  return {
+    country1Slug,
+    country1Heading,
+    country1Body,
+    country2Slug,
+    country2Heading,
+    country2Body,
+  };
 }
 
 function mapCountry(raw: any): CountryRef | undefined {
@@ -286,7 +303,7 @@ export async function getSendPage(slug: string): Promise<SendPage | null> {
       block11: mapGridBlock(fields, 11, 5),
       block12: mapGridBlock(fields, 12, 4),
       block13: mapSectionBlock(fields, 13),
-      highlightedCountries: buildHighlightedCountries(fields),
+      highlightedCountries: mapHighlightedCountries(fields),
       originCountry: mapCountry(fields.originCountry),
       destinationCountry: mapCountry(fields.destinationCountry),
       parentPage: mapParentPage(fields.parentPage),
@@ -403,6 +420,73 @@ export async function getFaqsByTag(tagName: string): Promise<Faq[]> {
     });
   } catch (err) {
     console.error(`Failed to fetch FAQs for tag "${tagName}":`, err);
+    return [];
+  }
+}
+
+/**
+ * Fetches related destinations for the PARENT page's related-countries
+ * section (block9 there, vs block12 on corridor pages). Filters:
+ *   - originCountry matches the current page's originCountry
+ *   - destinationCountry is set (i.e. it's a real corridor entry)
+ *   - destinationCountry is NOT highlightedCountry1 or highlightedCountry2
+ *     of the current page (those get their own dedicated spot elsewhere)
+ *   - the current page itself is excluded
+ */
+export async function getParentRelatedDestinations(
+  originCountrySlug: string,
+  currentSlug: string,
+  excludeDestinationSlugs: (string | undefined)[],
+): Promise<RelatedDestination[]> {
+  if (!STRAPI_API_URL || !STRAPI_API_TOKEN) return [];
+
+  const andClauses: string[] = [];
+  let i = 0;
+
+  andClauses.push(
+    `filters[$and][${i++}][originCountry][slug][$eq]=${encodeURIComponent(originCountrySlug)}`,
+  );
+  andClauses.push(`filters[$and][${i++}][slug][$ne]=${encodeURIComponent(currentSlug)}`);
+  andClauses.push(`filters[$and][${i++}][destinationCountry][id][$notNull]=true`);
+
+  for (const slug of excludeDestinationSlugs) {
+    if (slug) {
+      andClauses.push(
+        `filters[$and][${i++}][destinationCountry][slug][$ne]=${encodeURIComponent(slug)}`,
+      );
+    }
+  }
+
+  const url =
+    `${STRAPI_API_URL}/send-pages?${andClauses.join("&")}` +
+    `&populate[destinationCountry]=*`;
+
+  try {
+    const res = await fetch(url, {
+      headers: { Authorization: `Bearer ${STRAPI_API_TOKEN}` },
+      next: { revalidate: 60 },
+    });
+    if (!res.ok) {
+      console.error(
+        `getParentRelatedDestinations: Strapi responded with ${res.status}`,
+      );
+      return [];
+    }
+
+    const json: any = await res.json();
+    return (json?.data ?? []).map((raw: any) => {
+      const fields = raw.attributes ?? raw;
+      return {
+        slug: fields.slug,
+        name: fields.name,
+        destinationCountry: mapCountry(fields.destinationCountry),
+      };
+    });
+  } catch (err) {
+    console.error(
+      `Failed to fetch parent-related destinations for "${originCountrySlug}":`,
+      err,
+    );
     return [];
   }
 }

@@ -10,6 +10,7 @@
 
 import { DEVLINK_SCOPE_CLASS } from "./devlinkScope";
 import Block from "./webflow_modules/Basic/components/Block";
+import HtmlEmbed from "./webflow_modules/Embed/components/HtmlEmbed";
 import Image from "./webflow_modules/Basic/components/Image";
 import Link from "./webflow_modules/Basic/components/Link";
 
@@ -24,7 +25,11 @@ export type SendRelatedCountriesProps = {
     target?: "_self" | "_blank";
   };
   destinationCountryName?: React.ReactNode;
+  linkTextOne?: React.ReactNode;
+  linkTextThree?: React.ReactNode;
+  originCountryName?: React.ReactNode;
   showRelatedCountries?: boolean;
+  variant?: "Base" | "Parent";
 };
 
 /**
@@ -40,8 +45,19 @@ export function SendRelatedCountries({
   },
 
   destinationCountryName = "Heading",
+  linkTextOne = "Send money to",
+  linkTextThree = "Send money to",
+  originCountryName = "Send money to",
   showRelatedCountries = true,
+  variant = "Base",
 }: SendRelatedCountriesProps) {
+  const _styleVariantMap = {
+    Base: "",
+    Parent: "w-variant-dd4de953-c839-bc29-52a1-fd07a8466990",
+  };
+
+  const _activeStyleVariant = _styleVariantMap[variant];
+
   return (
     <div
       className={DEVLINK_SCOPE_CLASS}
@@ -53,25 +69,51 @@ export function SendRelatedCountries({
         <Link
           block={"inline"}
           button={false}
-          className={"link-block-7"}
+          className={`link-block-7 ${_activeStyleVariant}`}
           options={currentPageLink}
         >
           <Image
             alt={""}
-            className={"image-201"}
+            className={`image-201 ${_activeStyleVariant}`}
             height={"45"}
             loading={"lazy"}
             src={block12FlagImg}
             width={"45"}
           />
-          <Block className={"destination-label-wrap"} tag={"div"}>
-            <Block className={"more-destinations-label"} tag={"div"}>
-              {"Send money to"}
+          <Block
+            className={`destination-label-wrap ${_activeStyleVariant}`}
+            tag={"div"}
+          >
+            <Block
+              className={`more-destinations-label is-base ${_activeStyleVariant}`}
+              tag={"div"}
+            >
+              {linkTextOne}
             </Block>
-            <Block className={"more-destinations-label"} tag={"div"}>
+            <Block
+              className={`more-destinations-label parent ${_activeStyleVariant}`}
+              tag={"div"}
+            >
+              {originCountryName}
+            </Block>
+            <Block
+              className={`more-destinations-label parent ${_activeStyleVariant}`}
+              tag={"div"}
+            >
+              {linkTextThree}
+            </Block>
+            <Block
+              className={`more-destinations-label is-base ${_activeStyleVariant}`}
+              tag={"div"}
+            >
               {destinationCountryName}
             </Block>
           </Block>
+          <HtmlEmbed
+            content={
+              "<style>\n  .destination-label-wrap::after {\n    content: '';\n    position: absolute;\n    left: 0;\n    right: 0;\n    bottom: 0; /* adjust to sit under the text baseline */\n    height: 2px;\n    background: currentColor;\n  }\n</style>"
+            }
+          />
         </Link>
       ) : null}
     </div>

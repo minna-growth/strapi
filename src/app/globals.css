@@ -57,3 +57,7 @@
   line-height: 24px;
   padding: var(--_spacing---padding--side-padding);
 }
+
+.prog-link-block {
+  position: static !important;
+}
