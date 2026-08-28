@@ -5,7 +5,7 @@
   "siteId": "6360022338a81bd6fdbb1145",
   "devlink-export": {
     "rootDir": "./webflow",
-    "components": ".*",
+    "components": "^(BbFaq|DevLinkProvider|FaqSection|Footer|LocaleDropdown(New)?|NavLinksBlack|NavLinksWhite|NewsletterSubscription(Popup)?|PageLoader|ProductSwitch|SendBlock\\d+(Parent)?|SendFaq|SendHero|SendRelatedCountries|SendReviewScore|SendSource1)$",
     "componentGroups": ".*",
     "ts": true,
     "cssScopes": true,
