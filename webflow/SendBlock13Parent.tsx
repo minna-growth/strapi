@@ -20,6 +20,7 @@ import Section from "./webflow_modules/Layout/components/Section";
  */
 export type SendBlock13ParentProps = {
   block13Heading?: React.ReactNode;
+  showHeading?: boolean;
 };
 
 /**
@@ -29,6 +30,7 @@ export type SendBlock13ParentProps = {
  */
 export function SendBlock13Parent({
   block13Heading = "Heading",
+  showHeading = true,
 }: SendBlock13ParentProps) {
   return (
     <div
@@ -124,9 +126,11 @@ export function SendBlock13Parent({
                 width={"auto"}
               />
             </Block>
-            <Heading className={"new-section-heading_ii"} tag={"h2"}>
-              {block13Heading}
-            </Heading>
+            {showHeading ? (
+              <Heading className={"new-section-heading_ii"} tag={"h2"}>
+                {block13Heading}
+              </Heading>
+            ) : null}
             <Block className={"div-block-302"} tag={"div"}>
               <Image
                 alt={""}

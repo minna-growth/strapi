@@ -264,7 +264,7 @@ export function SendHero({
                     id={"email-form"}
                     method={"get"}
                     name={"email-form"}
-                    // @ts-expect-error FormForm generated type doesn't include redirect
+                     // @ts-expect-error FormForm generated type doesn't include redirect
                     redirect={"https://app.grey.co/auth/register"}
                   >
                     <Block className={"atswrapper"} tag={"div"}>

@@ -225,7 +225,7 @@ export default async function SendPageRoute({ params }: PageProps) {
             block12GridItem4Bodyy={page.block12?.grid4Body}
           />
 
-          <SendBlock13Parent block13Heading={page.block13?.heading} />
+          <SendBlock13Parent block13Heading={page.block13?.heading} showHeading />
 
           {faqs.length > 0 && (
             <SendFaq
