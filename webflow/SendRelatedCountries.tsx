@@ -111,7 +111,7 @@ export function SendRelatedCountries({
           </Block>
           <HtmlEmbed
             content={
-              "<style>\n  .destination-label-wrap::after {\n    content: '';\n    position: absolute;\n    left: 0;\n    right: 0;\n    bottom: 0; /* adjust to sit under the text baseline */\n    height: 2px;\n    background: currentColor;\n  }\n</style>"
+              "<style>\n  .destination-label-wrap::after {\n    content: '';\n    position: absolute;\n    left: 0;\n    right: 0;\n    bottom: 0; /* adjust to sit under the text baseline */\n    height: 2px;\n    background: #1b1f28;\n  }\n</style>"
             }
           />
         </Link>

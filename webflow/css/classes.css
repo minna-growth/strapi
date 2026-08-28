@@ -7583,7 +7583,6 @@
     display: flex;
     grid-column-gap: 4px;
     grid-row-gap: 4px;
-    text-decoration: underline;
   }
   @media screen and (min-width: 1280px) {
     .feature-card-heading.is-dark.xl {
