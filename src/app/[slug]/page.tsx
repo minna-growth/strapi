@@ -5,10 +5,17 @@
 // JSON-LD schema and per-page SEO metadata.
 
 import { notFound } from "next/navigation";
+import { BbFaq } from "webflow/BbFaq";
+import { Footer } from "webflow/Footer";
 import { UpdatedNavbar } from "webflow/navbar/UpdatedNavbar";
-import { SendHero } from "webflow/SendHero";
-import { SendReviewScore } from "webflow/SendReviewScore";
 import { SendBlock1 } from "webflow/SendBlock1";
+import { SendBlock10 } from "webflow/SendBlock10";
+import { SendBlock11 } from "webflow/SendBlock11";
+import { SendBlock11Parent } from "webflow/SendBlock11Parent";
+import { SendBlock12 } from "webflow/SendBlock12";
+import { SendBlock12Parent } from "webflow/SendBlock12Parent";
+import { SendBlock13 } from "webflow/SendBlock13";
+import { SendBlock13Parent } from "webflow/SendBlock13Parent";
 import { SendBlock1Parent } from "webflow/SendBlock1Parent";
 import { SendBlock2 } from "webflow/SendBlock2";
 import { SendBlock2Parent } from "webflow/SendBlock2Parent";
@@ -19,17 +26,10 @@ import { SendBlock7 } from "webflow/SendBlock7";
 import { SendBlock8 } from "webflow/SendBlock8";
 import { SendBlock9 } from "webflow/SendBlock9";
 import { SendBlock9Parent } from "webflow/SendBlock9Parent";
-import { SendBlock10 } from "webflow/SendBlock10";
-import { SendBlock11 } from "webflow/SendBlock11";
-import { SendBlock11Parent } from "webflow/SendBlock11Parent";
-import { SendBlock13 } from "webflow/SendBlock13";
-import { SendBlock12 } from "webflow/SendBlock12";
-import { SendBlock12Parent } from "webflow/SendBlock12Parent";
-import { SendBlock13Parent } from "webflow/SendBlock13Parent";
-import { SendRelatedCountries } from "webflow/SendRelatedCountries";
 import { SendFaq } from "webflow/SendFaq";
-import { BbFaq } from "webflow/BbFaq";
-import { Footer } from "webflow/Footer";
+import { SendHero } from "webflow/SendHero";
+import { SendRelatedCountries } from "webflow/SendRelatedCountries";
+import { SendReviewScore } from "webflow/SendReviewScore";
 
 import type { Metadata } from "next";
 import {
@@ -142,6 +142,7 @@ export default async function SendPageRoute({ params }: PageProps) {
           <SendBlock2Parent
             showHeading={false}
             showBadge={true}
+            block2Image1="https://cdn.prod.website-files.com/6360022338a81bd6fdbb1145/6563c15e45db91a91be06026_icon.svg"
             block2GridItem1Heading={page.block2?.step1Heading}
             block2GridItem2Heading={page.block2?.step2Heading}
             block2GridItem3Heading={page.block2?.step3Heading}
