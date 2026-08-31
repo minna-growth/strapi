@@ -7,6 +7,19 @@
 // individually named props (grid1Heading, grid1Body, ...) rather than
 // an array, so components can pull exactly the prop they need.
 
+import { SUPPORTED_CURRENCIES } from "./currencies-data";
+
+
+export type Currency = {
+  name: string;
+  slug: string;
+  countryShortcode?: string;
+  currencyShortcode: string;
+  currencySymbol?: string;
+  currencyFlag?: string;
+  isSourceCurrency: boolean;
+};
+
 export type Faq = {
   id: number;
   question: string;
@@ -489,4 +502,10 @@ export async function getParentRelatedDestinations(
     );
     return [];
   }
+}
+
+export async function getSupportedCurrencies(): Promise<Currency[]> {
+  // TODO: replace with a real Strapi fetch once "Supported Currencies" is
+  // migrated. Until then, this reads from the CSV-derived data file.
+  return SUPPORTED_CURRENCIES;
 }

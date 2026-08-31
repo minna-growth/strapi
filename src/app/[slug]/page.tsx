@@ -27,7 +27,7 @@ import { SendBlock8 } from "webflow/SendBlock8";
 import { SendBlock9 } from "webflow/SendBlock9";
 import { SendBlock9Parent } from "webflow/SendBlock9Parent";
 import { SendFaq } from "webflow/SendFaq";
-import { SendHero } from "webflow/SendHero";
+import { SendMoneyHero } from "@/components/SendMoneyHero";
 import { SendRelatedCountries } from "webflow/SendRelatedCountries";
 import { SendReviewScore } from "webflow/SendReviewScore";
 
@@ -37,6 +37,7 @@ import {
   getRelatedDestinations,
   getFaqsByTag,
   getParentRelatedDestinations,
+  getSupportedCurrencies,
 } from "@/lib/strapi";
 
 type PageProps = {
@@ -72,6 +73,12 @@ export default async function SendPageRoute({ params }: PageProps) {
     notFound();
   }
 
+  const supportedCurrencies = await getSupportedCurrencies();
+  const sendCurrencies = supportedCurrencies.filter((c) => c.isSourceCurrency);
+  const receiveCurrencies = supportedCurrencies.filter(
+    (c) => !c.isSourceCurrency,
+  );
+
   const [relatedDestinations, faqs, parentRelatedDestinations] =
     await Promise.all([
       page.destinationCountry && page.originCountry
@@ -106,7 +113,7 @@ export default async function SendPageRoute({ params }: PageProps) {
       {/* PARENT PAGE */}
       {page.isParentPage && (
         <div className="visibility-container">
-          <SendHero
+          <SendMoneyHero
             breadcrumbOneLink={
               page.parentPage
                 ? {
@@ -114,25 +121,17 @@ export default async function SendPageRoute({ params }: PageProps) {
                   }
                 : undefined
             }
-            breadcrumbOneText={page.originCountry?.name ?? ""}
-            breadcrumbTwo={page.name ?? ""}
-            heroHeading={page.heroHeading ?? ""}
-            heroSubheading={page.heroBody ?? ""}
-            buttonPrimaryBtnText={page.primaryCta ?? ""}
-            destinationCountryFlag={
-              page.destinationCountry?.countryFlag
-                ? { href: page.destinationCountry.countryFlag }
-                : undefined
-            }
-            destinationShortcode={
-              page.destinationCountry?.currencyShortcode ?? ""
-            }
-            originCountryFlag={
-              page.originCountry?.countryFlag
-                ? { href: page.originCountry.countryFlag }
-                : undefined
-            }
-            originCountryShortcode={page.originCountry?.currencyShortcode ?? ""}
+            breadcrumbOneText={page.originCountry?.name}
+            breadcrumbTwo={page.name}
+            heroHeading={page.heroHeading}
+            heroSubheading={page.heroBody}
+            buttonPrimaryBtnText={page.primaryCta}
+            originCountryShortcode={page.originCountry?.currencyShortcode}
+            sendCurrencies={sendCurrencies}
+            receiveCurrencies={receiveCurrencies}
+            defaultSourceCode={page.originCountry?.currencyShortcode}
+            // no defaultDestinationCode — no set destination on a parent page,
+            // ConvertWidget falls back to receiveCurrencies[0]
           />
           <SendReviewScore />
           <SendBlock1Parent
@@ -249,7 +248,7 @@ export default async function SendPageRoute({ params }: PageProps) {
       {/* CORRIDOR PAGE */}
       {page.isCorridorPage && (
         <div className="visibility-container">
-          <SendHero
+          <SendMoneyHero
             breadcrumbOneLink={
               page.parentPage
                 ? {
@@ -257,25 +256,17 @@ export default async function SendPageRoute({ params }: PageProps) {
                   }
                 : undefined
             }
-            breadcrumbOneText={page.originCountry?.name ?? ""}
-            breadcrumbTwo={page.name ?? ""}
-            heroHeading={page.heroHeading ?? ""}
-            heroSubheading={page.heroBody ?? ""}
-            buttonPrimaryBtnText={page.primaryCta ?? ""}
-            destinationCountryFlag={
-              page.destinationCountry?.countryFlag
-                ? { href: page.destinationCountry.countryFlag }
-                : undefined
-            }
-            destinationShortcode={
-              page.destinationCountry?.currencyShortcode ?? ""
-            }
-            originCountryFlag={
-              page.originCountry?.countryFlag
-                ? { href: page.originCountry.countryFlag }
-                : undefined
-            }
-            originCountryShortcode={page.originCountry?.currencyShortcode ?? ""}
+            breadcrumbOneText={page.originCountry?.name}
+            breadcrumbTwo={page.name}
+            heroHeading={page.heroHeading}
+            heroSubheading={page.heroBody}
+            buttonPrimaryBtnText={page.primaryCta}
+            originCountryShortcode={page.originCountry?.currencyShortcode}
+            destinationShortcode={page.destinationCountry?.currencyShortcode}
+            sendCurrencies={sendCurrencies}
+            receiveCurrencies={receiveCurrencies}
+            defaultSourceCode={page.originCountry?.currencyShortcode}
+            defaultDestinationCode={page.destinationCountry?.currencyShortcode}
           />
           <SendReviewScore />
           <SendBlock1
