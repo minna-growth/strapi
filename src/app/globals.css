@@ -17,6 +17,9 @@
   position: fixed !important;
 }
 
+body {
+  font-size: 14px;
+}
 .body-global {
   overflow-x: hidden;
   height: 100%;

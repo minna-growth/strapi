@@ -130,6 +130,7 @@ export default async function SendPageRoute({ params }: PageProps) {
             sendCurrencies={sendCurrencies}
             receiveCurrencies={receiveCurrencies}
             defaultSourceCode={page.originCountry?.currencyShortcode}
+            isParent={true}
             // no defaultDestinationCode — no set destination on a parent page,
             // ConvertWidget falls back to receiveCurrencies[0]
           />
@@ -249,6 +250,7 @@ export default async function SendPageRoute({ params }: PageProps) {
       {page.isCorridorPage && (
         <div className="visibility-container">
           <SendMoneyHero
+            isParent={false}
             breadcrumbOneLink={
               page.parentPage
                 ? {

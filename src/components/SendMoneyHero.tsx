@@ -36,6 +36,7 @@ type SendMoneyHeroProps = {
   receiveCurrencies: Currency[];
   defaultSourceCode?: string;
   defaultDestinationCode?: string;
+  isParent?: boolean;
 };
 
 const DEFAULT_CHEVRON =
@@ -64,6 +65,7 @@ export function SendMoneyHero({
   receiveCurrencies,
   defaultSourceCode,
   defaultDestinationCode,
+  isParent,
 }: SendMoneyHeroProps) {
   return (
     <div className={DEVLINK_SCOPE_CLASS} style={{ display: "contents" }}>
@@ -77,17 +79,21 @@ export function SendMoneyHero({
             <a className="prog-breadcrumb" href={breadcrumbThreeLink.href}>
               {breadcrumbThreeText}
             </a>
-            <img className="image-210" src={chevronDown} alt="" />
-            <a className="prog-breadcrumb" href={breadcrumbOneLink.href}>
-              {breadcrumbOneText}
-            </a>
+            {!isParent && (
+              <>
+                <img className="image-210" src={chevronDown} alt="" />
+                <a className="prog-breadcrumb" href={breadcrumbOneLink.href}>
+                  {breadcrumbOneText}
+                </a>
+              </>
+            )}
             <img className="image-210" src={chevronDown} alt="" />
             <div className="prog-breadcrumb">{breadcrumbTwo}</div>
           </div>
 
           <div className="prog-hero-content">
             <div className="prog-content_block">
-              <div className="prog-hero-copy">
+              <div className={`prog-hero-copy ${isParent ? "parent" : ""}`}>
                 <h1 className="new-hero-heading is-align-left">
                   {heroHeading}
                 </h1>
