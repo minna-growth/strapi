@@ -357,13 +357,15 @@ export default async function SendPageRoute({ params }: PageProps) {
               block12Block12Heading={page.block12?.heading ?? ""}
               relatedCountriesSlot={relatedDestinations.map((item) => (
                 <SendRelatedCountries
+                  variant="Base"
                   key={item.destinationCountry?.slug}
+                  linkTextOne="Send money to"
                   destinationCountryName={item.destinationCountry?.name ?? ""}
                   block12FlagImg={item.destinationCountry?.countryFlag ?? ""}
                   currentPageLink={
                     item.destinationCountry?.slug
                       ? {
-                          href: `${process.env.NEXT_PUBLIC_SITE_URL}/send-money/${item.destinationCountry.slug}`,
+                          href: `${process.env.NEXT_PUBLIC_SITE_URL}/send-money/${item.slug}`,
                         }
                       : undefined
                   }

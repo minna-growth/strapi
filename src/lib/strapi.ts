@@ -9,7 +9,6 @@
 
 import { SUPPORTED_CURRENCIES } from "./currencies-data";
 
-
 export type Currency = {
   name: string;
   slug: string;
@@ -360,8 +359,9 @@ export async function getRelatedDestinations(
   const url =
     `${STRAPI_API_URL}/send-pages` +
     `?filters[originCountry][slug][$eq]=${encodeURIComponent(originCountrySlug)}` +
+    `&filters[destinationCountry][$notNull]=true` +
     `&filters[slug][$ne]=${encodeURIComponent(currentSlug)}` +
-    `&filters[destinationCountry][id][$notNull]=true` +
+    `&pagination[pageSize]=100` +
     `&populate[destinationCountry]=*`;
 
   try {
@@ -369,7 +369,12 @@ export async function getRelatedDestinations(
       headers: { Authorization: `Bearer ${STRAPI_API_TOKEN}` },
       next: { revalidate: 60 },
     });
-    if (!res.ok) return [];
+    if (!res.ok) {
+      console.error(
+        `getRelatedDestinations: Strapi responded with ${res.status} for origin "${originCountrySlug}"`,
+      );
+      return [];
+    }
 
     const json: any = await res.json();
     return (json?.data ?? []).map((raw: any) => {
@@ -459,8 +464,10 @@ export async function getParentRelatedDestinations(
   andClauses.push(
     `filters[$and][${i++}][originCountry][slug][$eq]=${encodeURIComponent(originCountrySlug)}`,
   );
-  andClauses.push(`filters[$and][${i++}][slug][$ne]=${encodeURIComponent(currentSlug)}`);
-  andClauses.push(`filters[$and][${i++}][destinationCountry][id][$notNull]=true`);
+  andClauses.push(
+    `filters[$and][${i++}][slug][$ne]=${encodeURIComponent(currentSlug)}`,
+  );
+  andClauses.push(`filters[$and][${i++}][destinationCountry][$notNull]=true`);
 
   for (const slug of excludeDestinationSlugs) {
     if (slug) {
@@ -472,6 +479,7 @@ export async function getParentRelatedDestinations(
 
   const url =
     `${STRAPI_API_URL}/send-pages?${andClauses.join("&")}` +
+    `&pagination[pageSize]=100` +
     `&populate[destinationCountry]=*`;
 
   try {

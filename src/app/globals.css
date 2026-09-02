@@ -1,16 +1,16 @@
 :root {
   font-family: Aeonik, Arial, sans-serif;
-  line-height: 1.5;
+  line-height: 20px;
   font-weight: 400;
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
   background-color: #242424;
-
+  /* 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  -moz-osx-font-smoothing: grayscale; */
 }
 
 .navbar {
@@ -98,4 +98,38 @@ body {
   position: relative;
   border-radius: 32px;
   padding: 24px 24px 28px;
+}
+
+.more-destinations {
+  width: 100%;
+}
+
+.prog-send-wrapper img {
+  animation: prog-pulsing-arrow 3.5s ease-in-out infinite;
+}
+
+@keyframes prog-pulsing-arrow {
+  0% {
+    transform: translateX(0em);
+  }
+
+  8.57% {
+    transform: translateX(0.8em);
+  }
+
+  17.14% {
+    transform: translateX(0.5em);
+  }
+
+  25.71% {
+    transform: translateX(0.8em);
+  }
+
+  91.43% {
+    transform: translateX(0em);
+  }
+
+  100% {
+    transform: translateX(0em);
+  }
 }

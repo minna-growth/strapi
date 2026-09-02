@@ -686,6 +686,32 @@ export function UpdatedNavbar({
                           href: "/money-transfer",
                         }}
                       />
+                      <HubItem
+                        body={"Set money aside in USD, GBP & EUR"}
+                        heading={"Pouch"}
+                        iconBW={
+                          "https://cdn.prod.website-files.com/6360022338a81bd6fdbb1145/6a953e4152eeb727f6a03b75_Pouch%20Inactive%202.svg"
+                        }
+                        iconColored={
+                          "https://cdn.prod.website-files.com/6360022338a81bd6fdbb1145/6a953e41c99a4a52f1b954b3_pouch%20Colored%202.svg"
+                        }
+                        page={{
+                          href: "/pouch",
+                        }}
+                      />
+                      <HubItem
+                        body={"Buy eSIMs, gift cards and pay bills"}
+                        heading={"Lifestyle"}
+                        iconBW={
+                          "https://cdn.prod.website-files.com/6360022338a81bd6fdbb1145/6a953e1bf0b5d7f372197523_Lifestyle%20inactive%201.svg"
+                        }
+                        iconColored={
+                          "https://cdn.prod.website-files.com/6360022338a81bd6fdbb1145/6a953e22400cc970a132825e_Lifestyle.svg"
+                        }
+                        page={{
+                          href: "/lifestyle",
+                        }}
+                      />
                     </Block>
                   </Block>
                   <Block
@@ -769,6 +795,32 @@ export function UpdatedNavbar({
                     }
                     page={{
                       href: "/money-transfer",
+                    }}
+                  />
+                  <HubItem
+                    body={"Set money aside in USD, GBP & EUR"}
+                    heading={"Pouch"}
+                    iconBW={
+                      "https://cdn.prod.website-files.com/6360022338a81bd6fdbb1145/6a953e4152eeb727f6a03b75_Pouch%20Inactive%202.svg"
+                    }
+                    iconColored={
+                      "https://cdn.prod.website-files.com/6360022338a81bd6fdbb1145/6a953e41c99a4a52f1b954b3_pouch%20Colored%202.svg"
+                    }
+                    page={{
+                      href: "/pouch",
+                    }}
+                  />
+                  <HubItem
+                    body={"Buy eSIMs, gift cards and pay bills"}
+                    heading={"Lifestyle"}
+                    iconBW={
+                      "https://cdn.prod.website-files.com/6360022338a81bd6fdbb1145/6a953e4152eeb727f6a03b75_Pouch%20Inactive%202.svg"
+                    }
+                    iconColored={
+                      "https://cdn.prod.website-files.com/6360022338a81bd6fdbb1145/6a953e41c99a4a52f1b954b3_pouch%20Colored%202.svg"
+                    }
+                    page={{
+                      href: "/lifestyle",
                     }}
                   />
                   <Block
