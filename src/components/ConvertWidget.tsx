@@ -208,7 +208,7 @@ export function ConvertWidget({
 
     try {
       const res = await fetch(
-        `${EXCHANGE_BASE_URL}/v2/transaction/fee/landing`,
+        `${EXCHANGE_BASE_URL}/transaction/fee/landing`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
