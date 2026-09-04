@@ -90,7 +90,7 @@ export function ConvertWidget({
   const amountInputRef = useRef<HTMLInputElement>(null);
   const sourceWrapperRef = useRef<HTMLDivElement>(null);
   const destinationWrapperRef = useRef<HTMLDivElement>(null);
-  const debounceTimer = useRef<ReturnType<typeof setTimeout>>();
+ const debounceTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   const sourceCurrency = sendCurrencies.find((c) => c.currencyShortcode === sourceCode);
   const destinationCurrency = receiveCurrencies.find((c) => c.currencyShortcode === destinationCode);
