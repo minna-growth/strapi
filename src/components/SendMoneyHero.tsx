@@ -2,12 +2,14 @@
 //
 // Hand-authored replacement for the DevLink-generated SendHero, which
 // cannot export the currency-picker Collection List (confirmed via the
-// generated file's own `<NotSupported _atom={"Collection List"} />`
+// generated file's own `<NotSupported _atom={ Button } />`
 // placeholder). Reuses the exact class names from the real Designer
 // markup so it picks up the site's global CSS without any new styling.
 
 import { Button } from "webflow/ds/Button";
+
 import { ConvertWidget } from "./ConvertWidget";
+
 import type { Currency } from "@/lib/strapi";
 import { DEVLINK_SCOPE_CLASS } from "webflow/devlinkScope";
 
@@ -34,8 +36,6 @@ type SendMoneyHeroProps = {
   chevronDown?: string;
   sendCurrencies: Currency[];
   receiveCurrencies: Currency[];
-  defaultSourceCode?: string;
-  defaultDestinationCode?: string;
   isParent?: boolean;
 };
 
@@ -63,8 +63,6 @@ export function SendMoneyHero({
   chevronDown = DEFAULT_CHEVRON,
   sendCurrencies,
   receiveCurrencies,
-  defaultSourceCode,
-  defaultDestinationCode,
   isParent,
 }: SendMoneyHeroProps) {
   return (
@@ -114,8 +112,6 @@ export function SendMoneyHero({
               <ConvertWidget
                 sendCurrencies={sendCurrencies}
                 receiveCurrencies={receiveCurrencies}
-                defaultSourceCode={defaultSourceCode}
-                defaultDestinationCode={defaultDestinationCode}
               />
             </div>
           </div>

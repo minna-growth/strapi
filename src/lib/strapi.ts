@@ -288,7 +288,6 @@ export async function getSendPage(slug: string): Promise<SendPage | null> {
     if (!raw) return null;
 
     const fields = raw.attributes ?? raw;
-    console.log(fields)
 
     return {
       slug: fields.slug,

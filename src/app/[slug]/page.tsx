@@ -4,6 +4,7 @@
 // order (heading, body, optional bodyTwo, optional grid items), plus the
 // JSON-LD schema and per-page SEO metadata.
 
+import { SendMoneyHero } from "@/components/SendMoneyHero";
 import { notFound } from "next/navigation";
 import { BbFaq } from "webflow/BbFaq";
 import { Footer } from "webflow/Footer";
@@ -27,7 +28,6 @@ import { SendBlock8 } from "webflow/SendBlock8";
 import { SendBlock9 } from "webflow/SendBlock9";
 import { SendBlock9Parent } from "webflow/SendBlock9Parent";
 import { SendFaq } from "webflow/SendFaq";
-import { SendMoneyHero } from "@/components/SendMoneyHero";
 import { SendRelatedCountries } from "webflow/SendRelatedCountries";
 import { SendReviewScore } from "webflow/SendReviewScore";
 
@@ -37,8 +37,13 @@ import {
   getRelatedDestinations,
   getFaqsByTag,
   getParentRelatedDestinations,
-  getSupportedCurrencies,
 } from "@/lib/strapi";
+
+import {
+  buildSendCurrencies,
+  buildParentDestinationCurrencies,
+  buildCorridorDestinationCurrencies,
+} from "@/lib/currency-selectors";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
@@ -73,10 +78,8 @@ export default async function SendPageRoute({ params }: PageProps) {
     notFound();
   }
 
-  const supportedCurrencies = await getSupportedCurrencies();
-  const sendCurrencies = supportedCurrencies.filter((c) => c.isSourceCurrency);
-  const receiveCurrencies = supportedCurrencies.filter(
-    (c) => !c.isSourceCurrency,
+  const sendCurrencies = buildSendCurrencies(
+    page.originCountry?.currencyShortcode,
   );
 
   const [relatedDestinations, faqs, parentRelatedDestinations] =
@@ -114,6 +117,7 @@ export default async function SendPageRoute({ params }: PageProps) {
       {page.isParentPage && (
         <div className="visibility-container">
           <SendMoneyHero
+            isParent={true}
             breadcrumbOneLink={
               page.parentPage
                 ? {
@@ -128,11 +132,10 @@ export default async function SendPageRoute({ params }: PageProps) {
             buttonPrimaryBtnText={page.primaryCta}
             originCountryShortcode={page.originCountry?.currencyShortcode}
             sendCurrencies={sendCurrencies}
-            receiveCurrencies={receiveCurrencies}
-            defaultSourceCode={page.originCountry?.currencyShortcode}
-            isParent={true}
-            // no defaultDestinationCode — no set destination on a parent page,
-            // ConvertWidget falls back to receiveCurrencies[0]
+            receiveCurrencies={buildParentDestinationCurrencies(
+              parentRelatedDestinations,
+              page.originCountry?.currencyShortcode,
+            )}
           />
           <SendReviewScore />
           <SendBlock1Parent
@@ -266,9 +269,10 @@ export default async function SendPageRoute({ params }: PageProps) {
             originCountryShortcode={page.originCountry?.currencyShortcode}
             destinationShortcode={page.destinationCountry?.currencyShortcode}
             sendCurrencies={sendCurrencies}
-            receiveCurrencies={receiveCurrencies}
-            defaultSourceCode={page.originCountry?.currencyShortcode}
-            defaultDestinationCode={page.destinationCountry?.currencyShortcode}
+            receiveCurrencies={buildCorridorDestinationCurrencies(
+              page.destinationCountry,
+              relatedDestinations,
+            )}
           />
           <SendReviewScore />
           <SendBlock1

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-
 import type { Currency } from "@/lib/strapi";
 
 type ConversionResponse = {
@@ -16,20 +15,11 @@ type ConversionResponse = {
 type ConvertWidgetProps = {
   sendCurrencies: Currency[];
   receiveCurrencies: Currency[];
-  defaultSourceCode?: string;
-  defaultDestinationCode?: string;
 };
 
 const CURRENCY_SYMBOLS: Record<string, string> = {
-  EGP: "e£",
-  EUR: "€",
-  GBP: "£",
-  GHS: "GH₵",
-  KES: "KSh",
-  NGN: "N",
-  TZS: "TSh",
-  UGX: "USh",
-  USD: "$",
+  EGP: "e£", EUR: "€", GBP: "£", GHS: "GH₵", KES: "KSh",
+  NGN: "N", TZS: "TSh", UGX: "USh", USD: "$",
 };
 
 function getCurrencySymbol(code?: string) {
@@ -65,18 +55,27 @@ function formatNumberToMoney(
     : formatter.format(number).replace(/[a-zA-Z$€£₦]/gi, "");
 }
 
+const EXCHANGE_BASE_URL = process.env.NEXT_PUBLIC_GREY_EXCHANGE_BASE_URL;
+
 export function ConvertWidget({
   sendCurrencies,
   receiveCurrencies,
-  defaultSourceCode,
-  defaultDestinationCode,
 }: ConvertWidgetProps) {
-  const [sourceCode, setSourceCode] = useState(
-    defaultSourceCode || sendCurrencies[0]?.currencyShortcode || "",
-  );
-  const [destinationCode, setDestinationCode] = useState(
-    defaultDestinationCode || receiveCurrencies[0]?.currencyShortcode || "",
-  );
+  const [sourceCode, setSourceCode] = useState(sendCurrencies[0]?.currencyShortcode || "");
+  const [destinationCode, setDestinationCode] = useState(receiveCurrencies[0]?.currencyShortcode || "");
+
+  // The two lists are rebuilt server-side per page (different origin/
+  // destination rules per page). If the person navigates client-side
+  // between two such pages without a full remount, resync the selection
+  // to the new lists' correctly-ordered first entries.
+  useEffect(() => {
+    setSourceCode(sendCurrencies[0]?.currencyShortcode || "");
+  }, [sendCurrencies]);
+
+  useEffect(() => {
+    setDestinationCode(receiveCurrencies[0]?.currencyShortcode || "");
+  }, [receiveCurrencies]);
+
   const [sourceOpen, setSourceOpen] = useState(false);
   const [destinationOpen, setDestinationOpen] = useState(false);
   const [sourceSearch, setSourceSearch] = useState("");
@@ -91,16 +90,10 @@ export function ConvertWidget({
   const amountInputRef = useRef<HTMLInputElement>(null);
   const sourceWrapperRef = useRef<HTMLDivElement>(null);
   const destinationWrapperRef = useRef<HTMLDivElement>(null);
-  const debounceTimer = useRef<ReturnType<typeof setTimeout> | undefined>(
-    undefined,
-  );
+  const debounceTimer = useRef<ReturnType<typeof setTimeout>>();
 
-  const sourceCurrency = sendCurrencies.find(
-    (c) => c.currencyShortcode === sourceCode,
-  );
-  const destinationCurrency = receiveCurrencies.find(
-    (c) => c.currencyShortcode === destinationCode,
-  );
+  const sourceCurrency = sendCurrencies.find((c) => c.currencyShortcode === sourceCode);
+  const destinationCurrency = receiveCurrencies.find((c) => c.currencyShortcode === destinationCode);
 
   const filteredSource = sendCurrencies.filter(
     (c) =>
@@ -109,24 +102,16 @@ export function ConvertWidget({
   );
   const filteredDestination = receiveCurrencies.filter(
     (c) =>
-      c.currencyShortcode
-        .toLowerCase()
-        .includes(destinationSearch.toLowerCase()) ||
+      c.currencyShortcode.toLowerCase().includes(destinationSearch.toLowerCase()) ||
       c.name.toLowerCase().includes(destinationSearch.toLowerCase()),
   );
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
-      if (
-        sourceWrapperRef.current &&
-        !sourceWrapperRef.current.contains(e.target as Node)
-      ) {
+      if (sourceWrapperRef.current && !sourceWrapperRef.current.contains(e.target as Node)) {
         setSourceOpen(false);
       }
-      if (
-        destinationWrapperRef.current &&
-        !destinationWrapperRef.current.contains(e.target as Node)
-      ) {
+      if (destinationWrapperRef.current && !destinationWrapperRef.current.contains(e.target as Node)) {
         setDestinationOpen(false);
       }
     }
@@ -166,9 +151,14 @@ export function ConvertWidget({
     const amount = amountInputRef.current?.value ?? "";
     if (amount.trim() === "") return;
 
+    if (!EXCHANGE_BASE_URL) {
+      console.error("ConvertWidget: NEXT_PUBLIC_GREY_EXCHANGE_BASE_URL is not set.");
+      return;
+    }
+
     try {
       const res = await fetch(
-        "https://user-gw.grey.engineering/v2/transaction/fee/landing",
+        `${EXCHANGE_BASE_URL}/v2/transaction/fee/landing`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -197,18 +187,10 @@ export function ConvertWidget({
   }
 
   function handleSwap() {
-    // Note: send and receive draw from DIFFERENT lists (sendCurrencies vs
-    // receiveCurrencies) per the Source flag split, so a straight swap only
-    // makes sense when the current destination also happens to be a valid
-    // send currency (and vice versa). Guard against picking an invalid pair.
-    const newSource = sendCurrencies.find(
-      (c) => c.currencyShortcode === destinationCode,
-    )
+    const newSource = sendCurrencies.find((c) => c.currencyShortcode === destinationCode)
       ? destinationCode
       : sourceCode;
-    const newDestination = receiveCurrencies.find(
-      (c) => c.currencyShortcode === sourceCode,
-    )
+    const newDestination = receiveCurrencies.find((c) => c.currencyShortcode === sourceCode)
       ? sourceCode
       : destinationCode;
     setSourceCode(newSource);
@@ -235,9 +217,7 @@ export function ConvertWidget({
       <div className="atswrapper">
         <div className="outputamount center">
           <div className="div-block-263">
-            <label htmlFor="amount" className="atscopy">
-              YOU SEND
-            </label>
+            <label htmlFor="amount" className="atscopy">YOU SEND</label>
             <input
               ref={amountInputRef}
               id="amount"
@@ -250,25 +230,9 @@ export function ConvertWidget({
           </div>
 
           <div className="currency_drop first" ref={sourceWrapperRef}>
-            <div
-              className="source"
-              onClick={() => setSourceOpen((v) => !v)}
-              style={{
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                gap: 4,
-              }}
-            >
+            <div className="source" onClick={() => setSourceOpen((v) => !v)} style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: 4 }}>
               {sourceCurrency?.currencyFlag && (
-                <img
-                  id="source_currency_img"
-                  className="source_currency_img"
-                  src={sourceCurrency.currencyFlag}
-                  alt="flag"
-                  width={18}
-                  height={18}
-                />
+                <img id="source_currency_img" className="source_currency_img" src={sourceCurrency.currencyFlag} alt="flag" width={18} height={18} />
               )}
               <select
                 id="source_currency"
@@ -279,18 +243,13 @@ export function ConvertWidget({
                 style={{ pointerEvents: "none" }}
               >
                 {sendCurrencies.map((c) => (
-                  <option key={c.currencyShortcode} value={c.currencyShortcode}>
-                    {c.currencyShortcode}
-                  </option>
+                  <option key={c.currencyShortcode} value={c.currencyShortcode}>{c.currencyShortcode}</option>
                 ))}
               </select>
             </div>
 
             {sourceOpen && (
-              <div
-                className="list_container"
-                style={{ opacity: 1, display: "block", transform: "none" }}
-              >
+              <div className="list_container" style={{ opacity: 1, display: "block", transform: "none" }}>
                 <div className="search_container">
                   <input
                     id="field"
@@ -313,16 +272,8 @@ export function ConvertWidget({
                           data-currency={c.currencyShortcode}
                           onClick={() => selectSource(c.currencyShortcode)}
                         >
-                          {c.currencyFlag && (
-                            <img
-                              className="image-193"
-                              src={c.currencyFlag}
-                              alt=""
-                            />
-                          )}
-                          <div className="text-block-117">
-                            {c.currencyShortcode}
-                          </div>
+                          {c.currencyFlag && <img className="image-193" src={c.currencyFlag} alt="" />}
+                          <div className="text-block-117">{c.currencyShortcode}</div>
                           <div className="currency-name">{c.name}</div>
                         </div>
                       ))}
@@ -346,9 +297,7 @@ export function ConvertWidget({
       <div className="atswrapper">
         <div className="outputamount center">
           <div className="div-block-263">
-            <label htmlFor="outputAmount" className="atscopy">
-              RECIPIENT RECEIVES
-            </label>
+            <label htmlFor="outputAmount" className="atscopy">RECIPIENT RECEIVES</label>
             <input
               id="outputAmount"
               className="outputamount custom readonly head output_a"
@@ -360,25 +309,9 @@ export function ConvertWidget({
           </div>
 
           <div className="currency_drop" ref={destinationWrapperRef}>
-            <div
-              className="destination"
-              onClick={() => setDestinationOpen((v) => !v)}
-              style={{
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                gap: 4,
-              }}
-            >
+            <div className="destination" onClick={() => setDestinationOpen((v) => !v)} style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: 4 }}>
               {destinationCurrency?.currencyFlag && (
-                <img
-                  id="destination_currency_img"
-                  className="destination_currency_img"
-                  src={destinationCurrency.currencyFlag}
-                  alt="flag"
-                  width={18}
-                  height={18}
-                />
+                <img id="destination_currency_img" className="destination_currency_img" src={destinationCurrency.currencyFlag} alt="flag" width={18} height={18} />
               )}
               <select
                 id="destination_currency"
@@ -389,18 +322,13 @@ export function ConvertWidget({
                 style={{ pointerEvents: "none" }}
               >
                 {receiveCurrencies.map((c) => (
-                  <option key={c.currencyShortcode} value={c.currencyShortcode}>
-                    {c.currencyShortcode}
-                  </option>
+                  <option key={c.currencyShortcode} value={c.currencyShortcode}>{c.currencyShortcode}</option>
                 ))}
               </select>
             </div>
 
             {destinationOpen && (
-              <div
-                className="list_container _2"
-                style={{ opacity: 1, display: "block", transform: "none" }}
-              >
+              <div className="list_container _2" style={{ opacity: 1, display: "block", transform: "none" }}>
                 <div className="search_container">
                   <input
                     id="field"
@@ -423,16 +351,8 @@ export function ConvertWidget({
                           data-currency={c.currencyShortcode}
                           onClick={() => selectDestination(c.currencyShortcode)}
                         >
-                          {c.currencyFlag && (
-                            <img
-                              className="image-193"
-                              src={c.currencyFlag}
-                              alt=""
-                            />
-                          )}
-                          <div className="text-block-117">
-                            {c.currencyShortcode}
-                          </div>
+                          {c.currencyFlag && <img className="image-193" src={c.currencyFlag} alt="" />}
+                          <div className="text-block-117">{c.currencyShortcode}</div>
                           <div className="currency-name">{c.name}</div>
                         </div>
                       ))}
@@ -448,9 +368,7 @@ export function ConvertWidget({
       <div className="feeblock-2">
         <div className="feewrapper">
           <div className="widget-label">TODAY'S RATE</div>
-          <div id="todayRate" className="feeamount2 rate">
-            {todayRate}
-          </div>
+          <div id="todayRate" className="feeamount2 rate">{todayRate}</div>
         </div>
         <div className={hasResult ? "feewrapper" : "feewrapper hide"}>
           <div className="feecopy">Send fee</div>
@@ -462,12 +380,7 @@ export function ConvertWidget({
         </div>
       </div>
 
-      <button
-        type="button"
-        id="getDataBtn"
-        className="widget-button"
-        onClick={fetchConversion}
-      >
+      <button type="button" id="getDataBtn" className="widget-button" onClick={fetchConversion}>
         Send money
       </button>
     </div>
