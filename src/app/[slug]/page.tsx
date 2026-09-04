@@ -82,6 +82,8 @@ export default async function SendPageRoute({ params }: PageProps) {
     page.originCountry?.currencyShortcode,
   );
 
+  
+
   const [relatedDestinations, faqs, parentRelatedDestinations] =
     await Promise.all([
       page.destinationCountry && page.originCountry

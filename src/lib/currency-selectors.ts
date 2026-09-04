@@ -39,11 +39,11 @@ function countryToCurrency(country: CountryRef): Currency {
 }
 
 /**
- * "Recipient receives" dropdown for PARENT pages — built from the same
- * related-destinations data already fetched for the "more destinations"
- * section (getParentRelatedDestinations), not the static currency file.
- * USD goes first if present, UNLESS the origin country itself is USD, in
- * which case EUR goes first instead.
+ * "Recipient receives" dropdown for PARENT pages — built directly from the
+ * related destination countries. Country name is the map key because several
+ * countries can share a currency shortcode (for example, EUR), but each must
+ * remain a distinct selectable destination. USD goes first if present, UNLESS
+ * the origin country itself is USD, in which case EUR goes first instead.
  */
 export function buildParentDestinationCurrencies(
   relatedDestinations: RelatedDestination[],
@@ -51,15 +51,27 @@ export function buildParentDestinationCurrencies(
 ): Currency[] {
   const seen = new Map<string, Currency>();
 
+  console.log(relatedDestinations, "realateddd");
+
   for (const item of relatedDestinations) {
-    const dc = item.destinationCountry;
-    if (!dc?.currencyShortcode) continue;
-    if (!seen.has(dc.currencyShortcode)) {
-      seen.set(dc.currencyShortcode, countryToCurrency(dc));
+    const destination = item.destinationCountry;
+    if (
+      !destination?.name ||
+      !destination.slug ||
+      !destination.currencyName ||
+      !destination.currencyShortcode
+    ) {
+      continue;
+    }
+
+    if (!seen.has(destination.name)) {
+      seen.set(destination.name, countryToCurrency(destination));
     }
   }
 
+  console.log(seen, "seeen")
   const list = Array.from(seen.values());
+  //console.log(list);
   const priorityCode = originCurrencyShortcode === "USD" ? "EUR" : "USD";
   const priorityIndex = list.findIndex(
     (c) => c.currencyShortcode === priorityCode,
