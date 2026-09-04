@@ -50,6 +50,21 @@ type PageProps = {
   params: Promise<{ slug: string }>;
 };
 
+function getCanonicalUrl(slug: string): string | undefined {
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+  if (!siteUrl) return undefined;
+
+  try {
+    return new URL(
+      `/send-money/${encodeURIComponent(slug)}`,
+      siteUrl,
+    ).toString();
+  } catch {
+    console.error("NEXT_PUBLIC_SITE_URL is not a valid URL.");
+    return undefined;
+  }
+}
+
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
@@ -63,6 +78,9 @@ export async function generateMetadata({
   return {
     title: page.metaTitle || page.name,
     description: page.metaDescription ?? "",
+    alternates: {
+      canonical: getCanonicalUrl(page.slug),
+    },
   };
 }
 
