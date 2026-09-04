@@ -51,8 +51,6 @@ export function buildParentDestinationCurrencies(
 ): Currency[] {
   const seen = new Map<string, Currency>();
 
-  console.log(relatedDestinations, "realateddd");
-
   for (const item of relatedDestinations) {
     const destination = item.destinationCountry;
     if (
@@ -69,7 +67,6 @@ export function buildParentDestinationCurrencies(
     }
   }
 
-  console.log(seen, "seeen")
   const list = Array.from(seen.values());
   //console.log(list);
   const priorityCode = originCurrencyShortcode === "USD" ? "EUR" : "USD";
@@ -86,11 +83,10 @@ export function buildParentDestinationCurrencies(
 }
 
 /**
- * "Recipient receives" dropdown for CORRIDOR pages — the current page's
- * own destination currency always goes first, then the other related
- * corridors' destination currencies fill in behind it (deduplicated,
- * since several corridors can share one currency — e.g. Eurozone
- * countries all resolving to EUR).
+ * "Recipient receives" dropdown for CORRIDOR pages — the current destination
+ * comes first, followed by every valid related destination. Country name is
+ * the map key so destinations sharing a currency (such as EUR) remain
+ * separate options.
  */
 export function buildCorridorDestinationCurrencies(
   currentDestinationCountry: CountryRef | undefined,
@@ -99,9 +95,17 @@ export function buildCorridorDestinationCurrencies(
   const seen = new Map<string, Currency>();
 
   function add(country: CountryRef | undefined) {
-    if (!country?.currencyShortcode) return;
-    if (!seen.has(country.currencyShortcode)) {
-      seen.set(country.currencyShortcode, countryToCurrency(country));
+    if (
+      !country?.name ||
+      !country.slug ||
+      !country.currencyName ||
+      !country.currencyShortcode
+    ) {
+      return;
+    }
+
+    if (!seen.has(country.name)) {
+      seen.set(country.name, countryToCurrency(country));
     }
   }
 

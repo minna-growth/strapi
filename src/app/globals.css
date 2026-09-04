@@ -19,6 +19,7 @@
 
 body {
   font-size: 14px;
+  margin: 0;
 }
 .body-global {
   overflow-x: hidden;
@@ -40,7 +41,9 @@ body {
 .prog-hero-container {
   margin: 0 auto;
 }
-
+.dropdown_s, .source_c {
+  font-size: 20px;
+}
 .new-section-container-9,
 .new-section-container-10,
 .new-section-container {
