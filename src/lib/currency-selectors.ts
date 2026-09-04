@@ -1,17 +1,16 @@
 import type { Currency, CountryRef, RelatedDestination } from "./strapi";
-import { SUPPORTED_CURRENCIES } from "./currencies-data";
 
 /**
  * "You send" dropdown — same logic for both parent and corridor pages.
- * Filters the static Supported Currencies data down to isSourceCurrency
+ * Filters the supported-country records fetched from Strapi down to `source`
  * entries only, then puts whichever one matches the current page's origin
- * country first. The rest of the isSourceCurrency entries fill out the
- * remainder of the list.
+ * country first.
  */
 export function buildSendCurrencies(
   originCurrencyShortcode: string | undefined,
+  supportedCurrencies: Currency[],
 ): Currency[] {
-  const sourceCurrencies = SUPPORTED_CURRENCIES.filter(
+  const sourceCurrencies = supportedCurrencies.filter(
     (c) => c.isSourceCurrency,
   );
 

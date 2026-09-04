@@ -37,6 +37,7 @@ import {
   getRelatedDestinations,
   getFaqsByTag,
   getParentRelatedDestinations,
+  getSupportedCurrencies,
 } from "@/lib/strapi";
 
 import {
@@ -78,14 +79,13 @@ export default async function SendPageRoute({ params }: PageProps) {
     notFound();
   }
 
-  const sendCurrencies = buildSendCurrencies(
-    page.originCountry?.currencyShortcode,
-  );
-
-  
-
-  const [relatedDestinations, faqs, parentRelatedDestinations] =
-    await Promise.all([
+  const [
+    supportedCurrencies,
+    relatedDestinations,
+    faqs,
+    parentRelatedDestinations,
+  ] = await Promise.all([
+      getSupportedCurrencies(),
       page.destinationCountry && page.originCountry
         ? getRelatedDestinations(page.originCountry.slug, page.slug)
         : Promise.resolve([]),
@@ -97,6 +97,11 @@ export default async function SendPageRoute({ params }: PageProps) {
           ])
         : Promise.resolve([]),
     ]);
+
+  const sendCurrencies = buildSendCurrencies(
+    page.originCountry?.currencyShortcode,
+    supportedCurrencies,
+  );
 
   return (
     <main className="send-page">

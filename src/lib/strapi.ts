@@ -7,8 +7,6 @@
 // individually named props (grid1Heading, grid1Body, ...) rather than
 // an array, so components can pull exactly the prop they need.
 
-import { SUPPORTED_CURRENCIES } from "./currencies-data";
-
 export type Currency = {
   name: string;
   slug: string;
@@ -513,7 +511,63 @@ export async function getParentRelatedDestinations(
 }
 
 export async function getSupportedCurrencies(): Promise<Currency[]> {
-  // TODO: replace with a real Strapi fetch once "Supported Currencies" is
-  // migrated. Until then, this reads from the CSV-derived data file.
-  return SUPPORTED_CURRENCIES;
+  if (!STRAPI_API_URL || !STRAPI_API_TOKEN) {
+    console.error("Missing STRAPI_API_URL or STRAPI_API_TOKEN.");
+    return [];
+  }
+
+  const pageSize = 100;
+  const currencies: Currency[] = [];
+  let page = 1;
+  let pageCount = 1;
+
+  try {
+    do {
+      const url =
+        `${STRAPI_API_URL}/supported-countries-lists` +
+        `?pagination[page]=${page}&pagination[pageSize]=${pageSize}`;
+      const res = await fetch(url, {
+        headers: { Authorization: `Bearer ${STRAPI_API_TOKEN}` },
+        next: { revalidate: 300 },
+      });
+
+      if (!res.ok) {
+        console.error(
+          `getSupportedCurrencies: Strapi responded with ${res.status}`,
+        );
+        return [];
+      }
+
+      const json: any = await res.json();
+      for (const raw of json?.data ?? []) {
+        const fields = raw.attributes ?? raw;
+        if (
+          !fields.name ||
+          !fields.slug ||
+          !fields.currencyName ||
+          !fields.currencyShortcode
+        ) {
+          continue;
+        }
+
+        currencies.push({
+          name: fields.currencyName,
+          slug: fields.slug,
+          countryShortcode: fields.countryShortcode,
+          currencyShortcode: fields.currencyShortcode,
+          currencySymbol: fields.currencySymbol,
+          currencyFlag: fields.countryFlag,
+          isSourceCurrency: fields.source === true,
+        });
+      }
+
+      pageCount = json?.meta?.pagination?.pageCount ?? page;
+      page += 1;
+    } while (page <= pageCount);
+
+    return currencies;
+  } catch (err) {
+    console.error("Failed to fetch supported currencies:", err);
+    return [];
+  }
 }
